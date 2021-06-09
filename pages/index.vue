@@ -5,14 +5,44 @@
         <img class="logo" src="/images/logo.png" alt="LaraBot Logo" />
       </a>
       <h2>ChatBot Assistant</h2>
+
+      <button @click="connectWithSlack()">Connect with Slack</button>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
+import env from '@/environments'
 
-export default Vue.extend({})
+export default Vue.extend({
+  methods: {
+    connectWithSlack() {
+      const slackUrl = 'https://slack.com/oauth/v2/authorize?'
+      const state = Math.random().toString(36).substring(2)
+      localStorage.setItem('slack_state', state)
+      env.slack.bot_scopes.forEach((scope, index) => {
+        env.slack.bot_scopes[index] = scope.replace(':', '%3A')
+      })
+      env.slack.user_scopes.forEach((scope, index) => {
+        env.slack.user_scopes[index] = scope.replace(':', '%3A')
+      })
+      const connectUrl: string = slackUrl.concat(
+        'client_id=',
+        env.SLACK_CLIENT_ID,
+        '&user_scope=',
+        env.slack.user_scopes.join(','),
+        '&state=',
+        state,
+        '&redirect_uri=',
+        window.location.origin + '/auth/connect-slack'
+      )
+      window.location.replace(
+        `${connectUrl}&scope=${env.slack.bot_scopes.join(',')}`
+      )
+    },
+  },
+})
 </script>
 
 <style lang="scss" scoped>
