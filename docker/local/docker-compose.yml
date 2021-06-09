@@ -1,0 +1,47 @@
+version: '3'
+
+volumes:
+  dynamodb_data: {}
+  vscode_ssh: {}
+
+services:
+  app: &app
+    build:
+      context: .
+      dockerfile: ./app/Dockerfile
+    working_dir: /home/node/app
+    volumes:
+      - ../../:/home/node/app
+      - vscode_ssh:/root/.ssh
+    env_file:
+      - app/.env
+    command:
+      - /bin/sh
+      - -c
+      - |
+        yarn
+        chown -R ${SERVICE_PERMISSIONS} /home/node/app
+        yarn dev:docker
+    ports:
+      - "3000:3000"
+    environment:
+      - DOCKER_SERVER=true
+    networks:
+      - external_network
+
+  app_vscode:
+    <<: *app
+    command:
+      - /bin/sh
+      - -c
+      - |
+        yarn
+        sleep infinity
+    networks:
+      - external_network
+
+networks:
+  external_network:
+    external:
+      name: larabot-project-network
+
