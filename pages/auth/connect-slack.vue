@@ -21,18 +21,26 @@ export default Vue.extend({
     const { code, state, error } = this.$route.query
     const stateSession = localStorage.getItem('slack_state')
 
-    if (stateSession !== state || error === 'access_denied') {
-      this.loading = false
-      this.result = 'Something went wrong...'
-      return
-    }
+    console.log('--- 1 ----')
+    // if (stateSession !== state || error === 'access_denied') {
+    //   this.loading = false
+    //   this.result = 'Something went wrong...'
+    //   return
+    // }
 
     localStorage.removeItem('slack_state')
+    console.log('--- 2 ----')
     try {
-      await this.$axios.post('auth/connectSlack', { code, state })
+      const result = await this.$axios.post(
+        'https://12d0e3611d0d.ngrok.io/api_v1/auth/slack/connect',
+        { code, state }
+      )
+      console.log('--- 3 ----')
+      console.log(result)
       this.loading = false
       this.result = 'Connection Successfully'
     } catch (error) {
+      console.log('--- 4 ----')
       this.loading = false
       this.result = 'Something went wrong...'
     }

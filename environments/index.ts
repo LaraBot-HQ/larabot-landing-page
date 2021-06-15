@@ -11,6 +11,8 @@ export default {
       'chat:write',
       'chat:write.customize',
       'im:read',
+      'users:read',
+      'users:read.email',
     ],
     user_scopes: [
       'identity.avatar',
